@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shadows of Kivu</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Status Bar -->
+    <div id="status-bar">
+      <div class="status-item">
+        <span>Trust:</span>
+        <div class="meter-container">
+          <div id="trust-meter" class="meter"></div>
+        </div>
+      </div>
+      <div class="status-item">
+        <span>Resources:</span>
+        <div class="meter-container">
+          <div id="resources-meter" class="meter"></div>
+        </div>
+      </div>
+      <div class="status-item">
+        <span>Food:</span>
+        <div class="meter-container">
+          <div id="food-meter" class="meter"></div>
+        </div>
+      </div>
+      <!-- Progress Indicator -->
+      <div class="status-item progress-bar-container">
+        <div id="progress-indicator">
+          <div class="chapter-marker active" data-chapter="start">Start</div>
+          <div class="chapter-marker" data-chapter="chapter1">Ch.1</div>
+          <div class="chapter-marker" data-chapter="chapter2">Ch.2</div>
+          <div class="chapter-marker" data-chapter="chapter3">Ch.3</div>
+          <div class="chapter-marker" data-chapter="ending">End</div>
+        </div>
+      </div>
+      <!-- Sound Controls -->
+      <div class="sound-controls">
+        <button id="mute-button" class="sound-button">🔊</button>
+        <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+      </div>
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="scene">
+      <h1>Shadows of Kivu</h1>
+      <p id="start-text"></p>
+      <button id="start-button">Begin</button>
+    </div>
+
+    <!-- Chapter 1 -->
+    <div id="chapter1" class="scene hidden">
+      <div class="rain-effect"></div> <!-- Weather effect -->
+      <div class="top-section">
+        <!-- Image on the left -->
+        <div class="image-container">
+          <img src="images/refugee_camp.jpg" alt="Refugee Camp" class="scene-image">
+        </div>
+        <!-- Text on the right -->
+        <div class="text-container">
+          <div class="dialogue">
+            <img src="images/elder.jpg" alt="Local Elder" class="character-portrait">
+            <p id="chapter1-text"></p>
+          </div>
+        </div>
+      </div>
+      <!-- Buttons at the bottom -->
+      <div class="choices">
+        <button data-trust="-1" data-food="-5" data-branch="refugee_camp">Distribute food to children and the elderly first.</button>
+        <button data-trust="0" data-food="-3" data-branch="refugee_camp">Split rations equally, including adults.</button>
+        <button data-trust="-2" data-food="-2" data-branch="silence">Save half for future emergencies.</button>
+      </div>
+      <!-- Feedback notification -->
+      <div id="choice-feedback" class="feedback-notification hidden"></div>
+    </div>
+
+    <!-- Chapter 2 - Main -->
+    <div id="chapter2" class="scene hidden">
+      <div class="top-section">
+        <div class="image-container">
+          <img src="images/clinic_defended.jpg" alt="Clinic Defended" class="scene-image">
+        </div>
+        <div class="text-container">
+          <div class="dialogue">
+            <p id="chapter2-text"></p>
+          </div>
+        </div>
+      </div>
+      <div class="choices">
+        <button data-trust="2" data-resources="-3" data-branch="attack">Deploy troops to defend the clinic.</button>
+        <button data-trust="-1" data-resources="-2" data-branch="clinic_destroyed">Focus on evacuating civilians.</button>
+        <button data-trust="1" data-resources="-3" data-branch="negotiation">Negotiate with M23 via radio.</button>
+      </div>
+      <div id="choice-feedback-ch2" class="feedback-notification hidden"></div>
+    </div>
+
+    <!-- Chapter 2 - Attack Branch -->
+    <div id="chapter2-attack" class="scene hidden">
+      <div class="top-section">
+        <div class="image-container">
+          <img src="images/attack.jpg" alt="Attack" class="scene-image">
+        </div>
+        <div class="text-container">
+          <div class="dialogue">
+            <p id="chapter2-attack-text">Your peacekeepers engage with M23 fighters. The firefight is intense but your forces manage to hold the perimeter. Several peacekeepers are wounded, and the clinic sustains some damage, but civilians are protected.</p>
+          </div>
+        </div>
+      </div>
+      <div class="choices">
+        <button data-trust="1" data-resources="-2" data-branch="standard">Request reinforcements from UN command.</button>
+        <button data-trust="0" data-resources="-1" data-branch="standard">Establish a secure perimeter for the night.</button>
+      </div>
+      <div id="choice-feedback-ch2-attack" class="feedback-notification hidden"></div>
+    </div>
+
+    <!-- Chapter 2 - Clinic Destroyed Branch -->
+    <div id="chapter2-clinic_destroyed" class="scene hidden">
+      <div class="top-section">
+        <div class="image-container">
+          <img src="images/clinic_destroyed.jpg" alt="Clinic Destroyed" class="scene-image">
+        </div>
+        <div class="text-container">
+          <div class="dialogue">
+            <p id="chapter2-clinic_destroyed-text">You focus on evacuation. As civilians flee, M23 forces arrive and burn the clinic. Medical supplies are lost, but most civilians escape safely thanks to your intervention.</p>
+          </div>
+        </div>
+      </div>
+      <div class="choices">
+        <button data-trust="1" data-resources="-1" data-branch="standard">Set up a temporary medical station in the refugee camp.</button>
+        <button data-trust="-1" data-resources="0" data-branch="standard">Move civilians further from the conflict zone.</button>
+      </div>
+      <div id="choice-feedback-ch2-clinic" class="feedback-notification hidden"></div>
+    </div>
+
+    <!-- Chapter 2 - Negotiation Branch -->
+    <div id="chapter2-negotiation" class="scene hidden">
+      <div class="top-section">
+        <div class="image-container">
+          <img src="images/negotiation.jpg" alt="Negotiation" class="scene-image">
+        </div>
+        <div class="text-container">
+          <div class="dialogue">
+            <p id="chapter2-negotiation-text">You establish radio contact with the M23 commander. After tense negotiations, they agree to bypass the clinic in exchange for non-interference with their movement through a nearby valley.</p>
+          </div>
+        </div>
+      </div>
+      <div class="choices">
+        <button data-trust="2" data-resources="-1" data-branch="standard">Honor the agreement, focusing on civilian protection.</button>
+        <button data-trust="-2" data-resources="0" data-branch="standard">Report M23 positions to DRC army once civilians are safe.</button>
+      </div>
+      <div id="choice-feedback-ch2-negotiation" class="feedback-notification hidden"></div>
+    </div>
+
+    <!-- Chapter 3 -->
+    <div id="chapter3" class="scene hidden">
+      <div class="top-section">
+        <div class="image-container">
+          <img src="images/survivor.jpg" alt="Survivor" class="scene-image">
+        </div>
+        <div class="text-container">
+          <div class="dialogue">
+            <p id="chapter3-text"></p>
+          </div>
+        </div>
+      </div>
+      <div class="choices">
+        <button data-trust="-3" data-branch="evidence">Interview her openly.</button>
+        <button data-trust="1" data-resources="-2" data-branch="evidence">Record testimony secretly.</button>
+        <button data-trust="-2" data-branch="silence">Stay silent to protect her.</button>
+      </div>
+      <div id="choice-feedback-ch3" class="feedback-notification hidden"></div>
+    </div>
+
+    <!-- Chapter 3 - Evidence Branch -->
+    <div id="chapter3-evidence" class="scene hidden">
+      <div class="top-section">
+        <div class="image-container">
+          <img src="images/evidence.jpg" alt="Evidence" class="scene-image">
+        </div>
+        <div class="text-container">
+          <div class="dialogue">
+            <p id="chapter3-evidence-text">The survivor's testimony provides critical evidence of war crimes. UN investigators document the details, and an international human rights organization takes interest in building a case.</p>
+          </div>
+        </div>
+      </div>
+      <div class="choices">
+        <button data-trust="1" data-resources="-1">Submit evidence to the International Criminal Court.</button>
+        <button data-trust="-1" data-resources="0">Share findings with select media outlets.</button>
+      </div>
+      <div id="choice-feedback-ch3-evidence" class="feedback-notification hidden"></div>
+    </div>
+
+    <!-- Chapter 3 - Silence Branch -->
+    <div id="chapter3-silence" class="scene hidden">
+      <div class="top-section">
+        <div class="image-container">
+          <img src="images/silence.jpg" alt="Silence" class="scene-image">
+        </div>
+        <div class="text-container">
+          <div class="dialogue">
+            <p id="chapter3-silence-text">You decide against recording her testimony to protect her from reprisals. The woman thanks you, though the truth of what happened remains undocumented. You arrange for her safe transport to a more secure location.</p>
+          </div>
+        </div>
+      </div>
+      <div class="choices">
+        <button data-trust="2" data-resources="-2">Provide additional protection and resources for her family.</button>
+        <button data-trust="0" data-resources="0">Focus on preventative measures for future incidents.</button>
+      </div>
+      <div id="choice-feedback-ch3-silence" class="feedback-notification hidden"></div>
+    </div>
+
+    <!-- Ending -->
+    <div id="ending" class="scene hidden">
+      <h2>Ending</h2>
+      <p id="ending-text"></p>
+      <div class="end-buttons">
+        <button id="restart-button">Restart</button>
+        <button id="learn-more-button">Learn More About the War</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Elements -->
+  <audio id="background-music" loop>
+    <source src="audio/tense_music.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="ambient-refugee" loop>
+    <source src="audio/ambient_refugee.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="ambient-clinic" loop>
+    <source src="audio/ambient_clinic.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="ambient-survivor" loop>
+    <source src="audio/ambient_survivor.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="scene-transition-sound">
+    <source src="audio/scene_transition.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="stat-change-sound">
+    <source src="audio/stat_change.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
